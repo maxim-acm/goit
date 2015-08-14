@@ -23,7 +23,13 @@
             localStorage.setItem('tasks', JSON.stringify(tasks));
         };
         this.load = function() {
-            return JSON.parse(localStorage.getItem('tasks'));
+            var tasks = {};
+            try {
+                tasks = JSON.parse(localStorage.getItem('tasks'));
+            } catch (e) {
+                localStorage.clear();
+            }
+            return tasks;
         };
     }
 
@@ -103,8 +109,7 @@
                 var input = view.getInput(),
                     todoText = input.value;
                 if (todoText) {
-                    var newItem = new Item(todoText);
-                    model.add(newItem);
+                    model.add(new Item(todoText));
                     input.value = '';
                     input.focus();
                     view.render();
@@ -126,8 +131,10 @@
             });
             view.getList().addEventListener('click', function(e) {
                 if (e.target.type !== 'button') return;
+
                 var input = e.target,
                     taskId = input.parentNode.dataset.id;
+
                 model.remove(taskId);
                 input.parentNode.remove();
             });
